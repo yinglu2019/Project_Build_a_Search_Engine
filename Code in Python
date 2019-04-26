@@ -36,18 +36,21 @@ def get_all_links(page):
             break
     return links
 
-def crawl_web(seed): 
-    tocrawl = [seed] 
-    crawled = [] 
-    index = [] 
+def crawl_web(seed): # returns index, graph of outlinks
+    tocrawl = [seed]
+    crawled = []
+    graph = {}  # <url>:[list of pages it links to]
+    index = {} 
     while tocrawl: 
         page = tocrawl.pop()
-        if page not in crawled: 
-            content = get_page(page) 
-            add_page_to_index(index, page, content) 
-            union(tocrawl, get_all_links(content)) 
-            crawled.append(page) 
-    return index 
+        if page not in crawled:
+            content = get_page(page)
+            add_page_to_index(index, page, content)
+            outlinks = get_all_links(content)
+            graph[page]=outlinks
+            union(tocrawl, outlinks)
+            crawled.append(page)
+    return index, graph
 
 def add_page_to_index(index, url, content): 
     words = content.split() 
@@ -64,8 +67,8 @@ def add_to_index(index, keyword, url):
     
 # The procedure should return a list of the urls associated with the keyword. If the keyword is not in the index, the procedure
 # should return an empty list.
-index = [['udacity', ['http://udacity.com', 'http://npr.org']],
-         ['computing', ['http://acm.org']]]
+index = {['udacity', ['http://udacity.com', 'http://npr.org']],
+         ['computing', ['http://acm.org']]}
 def lookup(index,keyword):
     if keyword in index:
             return index[keyword]
