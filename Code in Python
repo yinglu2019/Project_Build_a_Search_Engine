@@ -36,25 +36,39 @@ def get_all_links(page):
             break
     return links
 
-def crawl_web(seed,max_pages):
-    tocrawl = [seed]
-    crawled = []
-    while tocrawl:
+def crawl_web(seed): 
+    tocrawl = [seed] 
+    crawled = [] 
+    index = [] 
+    while tocrawl: 
         page = tocrawl.pop()
-        if page not in crawled and len(crawled)<max_pages:
-            union(tocrawl,get_all_links(get_page(page)))
-            crawled.append(page)
-    return crawled
+        if page not in crawled: 
+            content = get_page(page) 
+            add_page_to_index(index, page, content) 
+            union(tocrawl, get_all_links(content)) 
+            crawled.append(page) 
+    return index 
+
+def add_page_to_index(index, url, content): 
+    words = content.split() 
+    for word in words: 
+        add_to_index(index, word, url) 
+
+def add_to_index(index, keyword, url): 
+    for entry in index: 
+        if entry[0] == keyword: entry[1].append(url) 
+            return 
+    # not found, add new keyword to index 
+    index.append([keyword, [url]]) 
     
 # The procedure should return a list of the urls associated with the keyword. If the keyword is not in the index, the procedure
 # should return an empty list.
 index = [['udacity', ['http://udacity.com', 'http://npr.org']],
          ['computing', ['http://acm.org']]]
 def lookup(index,keyword):
-    for entry in index:
-        if keyword==entry[0]:
-            return entry[1]
-    return []
+    if keyword in index:
+            return index[keyword]
+    return None
 print lookup(index,'udacity')
             
 def compute_ranks(graph):
